@@ -19,9 +19,7 @@ func NewPipeNode() *PipeNode {
 
 // SetPrevNode set a prev pipe line node from current node
 func (n *PipeNode) SetPrevNode(prev *PipeNode) {
-	if n != nil {
-		n.prevNode = prev
-	}
+	n.prevNode = prev
 }
 
 // GetPrevNode get pipe's prev node
@@ -31,9 +29,7 @@ func (n *PipeNode) GetPrevNode() *PipeNode {
 
 // SetNextNode set a next pipe line node from current node
 func (n *PipeNode) SetNextNode(next *PipeNode) {
-	if n != nil {
-		n.nextNode = next
-	}
+	n.nextNode = next
 }
 
 // GetNextNode get pipe's next node
@@ -41,11 +37,15 @@ func (n *PipeNode) GetNextNode() *PipeNode {
 	return n.nextNode
 }
 
+// SetNodes set both prev and next node at same time
+func (n *PipeNode) SetNodes(prev, next *PipeNode) {
+	n.prevNode = prev
+	n.nextNode = next
+}
+
 // SetWork set current pipe's work
 func (n *PipeNode) SetWork(w Worker) {
-	if n != nil {
-		n.worker = w
-	}
+	n.worker = w
 }
 
 var (
