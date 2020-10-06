@@ -7,7 +7,6 @@ import (
 
 // PipeNode is a node have prev and next worker node
 type PipeNode struct {
-	// ctx      context.Context
 	prevNode *PipeNode
 	nextNode *PipeNode
 	worker   Worker
@@ -49,13 +48,29 @@ func (n *PipeNode) SetWork(w Worker) {
 	}
 }
 
-// ErrLastNode return when there are no node left
-var ErrLastNode = errors.New("last node")
+var (
+	// ErrFristNode return when there are no node before current node
+	ErrFristNode = errors.New("frist node")
+	// ErrLastNode return when there are no node after current node
+	ErrLastNode = errors.New("last node")
+	// ErrEmptyNode return when parameter is nil
+	ErrEmptyNode = errors.New("empty node")
+)
 
-// DefaultExec is a default method for a pipe line to run
-func DefaultExec(ctx context.Context, n *PipeNode) error {
+// Pipe is a pipe line main executor
+type Pipe struct {
+	ctx context.Context
+}
+
+// NewPipe create a new pipe
+func NewPipe(ctx context.Context) *Pipe {
+	return &Pipe{ctx: ctx}
+}
+
+// Exec execute worker's work forward
+func (p *Pipe) Exec(n *PipeNode) error {
 	if n != nil {
-		ctx, err := n.worker.Run(ctx)
+		ctx, err := n.worker.Run(p.ctx)
 		if err != nil {
 			return err
 		}
@@ -64,8 +79,30 @@ func DefaultExec(ctx context.Context, n *PipeNode) error {
 			return ErrLastNode
 		}
 
-		return DefaultExec(ctx, n.GetNextNode())
+		p.ctx = ctx
+
+		return p.Exec(n.GetNextNode())
 	}
 
-	return errors.New("empty node")
+	return ErrEmptyNode
+}
+
+// Revert execute worker's work backward
+func (p *Pipe) Revert(n *PipeNode) error {
+	if n != nil {
+		ctx, err := n.worker.Revert(p.ctx)
+		if err != nil {
+			return err
+		}
+
+		if n.GetPrevNode() == nil {
+			return ErrFristNode
+		}
+
+		p.ctx = ctx
+
+		return p.Revert(n.GetPrevNode())
+	}
+
+	return ErrEmptyNode
 }

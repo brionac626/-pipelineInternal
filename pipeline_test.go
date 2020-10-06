@@ -19,13 +19,20 @@ func TestPipe(t *testing.T) {
 	p1.SetWork(&p1Worker{})
 
 	// work 2
+	p2.SetPrevNode(p1)
 	p2.SetNextNode(p3)
 	p2.SetWork(&p2Worker{})
 
 	// work 3 last work
+	p3.SetPrevNode(p2)
 	p3.SetWork(&p3Worker{})
 
-	if err := DefaultExec(ctx, p1); err != nil {
+	p := NewPipe(ctx)
+	if err := p.Exec(p1); err != nil {
+		t.Error(err)
+	}
+
+	if err := p.Revert(p3); err != nil {
 		t.Error(err)
 	}
 }
@@ -38,6 +45,11 @@ func (p1 *p1Worker) Run(ctx context.Context) (context.Context, error) {
 	fmt.Println("p1")
 	p1.Name = "worker 1"
 	ctx = context.WithValue(ctx, p1Worker{}, p1)
+	return ctx, nil
+}
+
+func (p1 *p1Worker) Revert(ctx context.Context) (context.Context, error) {
+	fmt.Println("1p")
 	return ctx, nil
 }
 
@@ -55,9 +67,19 @@ func (p2 *p2Worker) Run(ctx context.Context) (context.Context, error) {
 	return ctx, nil
 }
 
+func (p2 *p2Worker) Revert(ctx context.Context) (context.Context, error) {
+	fmt.Println("2p")
+	return ctx, nil
+}
+
 type p3Worker struct{}
 
 func (p3 *p3Worker) Run(ctx context.Context) (context.Context, error) {
 	fmt.Println("p3")
+	return ctx, nil
+}
+
+func (p3 *p3Worker) Revert(ctx context.Context) (context.Context, error) {
+	fmt.Println("3p")
 	return ctx, nil
 }
