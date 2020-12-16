@@ -64,7 +64,7 @@ func (p2 *p2Worker) Run(ctx context.Context) (context.Context, error) {
 	fmt.Println("p2")
 	fmt.Println(p1.Name)
 
-	return ctx, nil
+	return ctx, errors.New("test")
 }
 
 func (p2 *p2Worker) Revert(ctx context.Context) (context.Context, error) {
