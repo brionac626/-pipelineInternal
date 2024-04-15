@@ -14,7 +14,7 @@ func TestPipe(t *testing.T) {
 	p2 := NewPipeNode()
 	p3 := NewPipeNode()
 
-	// work 1 frist work
+	// work 1 first work
 	p1.SetNextNode(p2)
 	p1.SetWork(&p1Worker{})
 
