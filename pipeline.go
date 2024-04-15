@@ -49,8 +49,8 @@ func (n *PipeNode) SetWork(w Worker) {
 }
 
 var (
-	// ErrFristNode return when there are no node before current node
-	ErrFristNode = errors.New("frist node")
+	// ErrFirstNode return when there are no node before current node
+	ErrFirstNode = errors.New("first node")
 	// ErrLastNode return when there are no node after current node
 	ErrLastNode = errors.New("last node")
 	// ErrEmptyNode return when parameter is nil
@@ -96,7 +96,7 @@ func (p *Pipe) Revert(n *PipeNode) error {
 		}
 
 		if n.GetPrevNode() == nil {
-			return ErrFristNode
+			return ErrFirstNode
 		}
 
 		p.ctx = ctx
